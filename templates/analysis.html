@@ -1,0 +1,64 @@
+{% extends 'base.html' %}{% block content %}
+<header class="report-header">
+  <div>
+    <a class="back-link" href="{{ url_for('history') }}">← Resume history</a>
+    <p class="eyebrow">PERSONALIZED RESUME REVIEW</p>
+    <h1>{{row.filename}}</h1>
+    <p class="report-date">Analyzed {{row.created_at}}</p>
+  </div>
+  <div class="report-actions">
+    <a class="btn" href="{{ url_for('download_report', aid=row.id) }}">Download report PDF</a>
+    <button class="btn btn-secondary" type="button" onclick="window.print()">Print / save as PDF</button>
+  </div>
+</header>
+
+<section class="report-score-panel">
+  <div class="score-ring" style="--score: {{ result.score|int }};" role="img" aria-label="Resume score: {{ result.score }} out of 100">
+    <div><strong>{{result.score}}</strong><span>out of 100</span></div>
+  </div>
+  <div class="score-copy">
+    <p class="eyebrow">YOUR RESUME SNAPSHOT</p>
+    <h2>Resume readiness</h2>
+    <p>Use this score as a starting point to improve how clearly your experience and skills come across.</p>
+    <p class="report-disclaimer">Educational estimate only; this is not a certified ATS result.</p>
+  </div>
+  <div class="score-counts">
+    <div><strong>{{result.skills|length}}</strong><span>Skills detected</span></div>
+    <div><strong>{{result.strengths|length}}</strong><span>Strengths</span></div>
+    <div><strong>{{result.weaknesses|length}}</strong><span>Suggestions</span></div>
+  </div>
+</section>
+
+<section class="panel report-section">
+  <div class="section-heading"><span class="section-icon">✦</span><div><h2>Skills detected</h2><p>Skills recognized from the resume text.</p></div></div>
+  <div class="report-tags">{% for s in result.skills %}<span class="tag">{{s}}</span>{% else %}<p>No known skills detected yet. Try adding a clearly labeled skills section.</p>{% endfor %}</div>
+</section>
+
+<div class="two report-columns">
+  <section class="panel report-section">
+    <div class="section-heading"><span class="section-icon positive">✓</span><div><h2>What’s working</h2><p>Relevant details already present.</p></div></div>
+    <ul class="report-list strengths-list">{% for x in result.strengths %}<li>{{x}}</li>{% else %}<li>No strengths were recorded.</li>{% endfor %}</ul>
+  </section>
+  <section class="panel report-section">
+    <div class="section-heading"><span class="section-icon improve">↗</span><div><h2>Opportunities to improve</h2><p>Practical next steps for your resume.</p></div></div>
+    <ul class="report-list improvements-list">{% for x in result.weaknesses %}<li>{{x}}</li>{% else %}<li>No improvement suggestions were recorded.</li>{% endfor %}</ul>
+  </section>
+</div>
+
+<section class="panel report-section">
+  <div class="section-heading"><span class="section-icon">✓</span><div><h2>ATS-friendly checklist</h2><p>Simple formatting and content checks to consider.</p></div></div>
+  <ul class="checklist">{% for x in result.ats_tips %}<li>{{x}}</li>{% else %}<li>No checklist items were recorded.</li>{% endfor %}</ul>
+</section>
+
+<section class="panel report-section">
+  <div class="section-heading"><span class="section-icon">↗</span><div><h2>Role matches</h2><p>Rule-based skill overlap across example roles.</p></div></div>
+  <div class="role-grid">{% for j in jobs[:4] %}
+  <article class="role-card">
+    <div class="role-title"><h3>{{j.role}}</h3><strong>{{j.match}}%</strong></div>
+    <div class="match-track"><span style="width: {{j.match|int}}%;"></span></div>
+    <p><b>Matched:</b> {{j.matched|join(', ') if j.matched else 'No matching skills detected'}}</p>
+    <p><b>To explore:</b> {{j.missing|join(', ') if j.missing else 'No skill gaps detected'}}</p>
+  </article>
+  {% endfor %}</div>
+</section>
+{% endblock %}

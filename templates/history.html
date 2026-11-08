@@ -1,0 +1,1 @@
+{% extends 'base.html' %}{% block content %}<h1>Resume history</h1><section class="panel">{% for r in rows %}<p><a href="/analysis/{{r.id}}">{{r.filename}}</a> — {{r.score}}/100 <small>{{r.created_at}}</small></p>{% else %}<p>No saved reports yet.</p>{% endfor %}</section>{% endblock %}
